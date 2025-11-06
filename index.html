@@ -65,6 +65,30 @@
     .dark {
       color:white !important;
     }
+    /* contenedor del texto renderizado de la alabanza */
+    .alabanza-texto {
+      column-count: 1;               /* por defecto, una sola columna */
+      column-gap: 2rem;              /* espacio entre columnas */
+      max-height: 80vh;              /* evita que crezca demasiado */
+      overflow-y: auto;
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 1rem;
+      line-height: 1.5;
+      transition: column-count 0.3s ease;
+    }
+
+    /* cuando la alabanza es larga, aplica dos columnas */
+    .alabanza-texto.dos-columnas {
+      column-count: 2;
+    }
+
+    /* mejora visual de acordes */
+    .chord-line {
+      font-weight: bold;
+      color: #1a5edb;
+    }
+
   </style>
 </head>
 <body>
@@ -86,43 +110,49 @@
 
   <div class="row">
     <!-- Todas -->
-    <div class="col-md-6">
+    <div class="col-md-12">
       <h5>Todas las alabanzas</h5>
       <ul id="songList" class="list-group mb-3"></ul>
       <button class="btn btn-primary w-100 mb-4" onclick="nuevaAlabanza()">➕ Nueva alabanza</button>
     </div>
 
+    
+  </div>
+
+  <hr>
+  <div class="row">
     <!-- Seleccionadas -->
-    <div class="col-md-6">
+    <div class="col-md-4">
       <div class="d-flex justify-content-between align-items-center mb-2">
         <h5>Seleccionadas</h5>
         <button class="btn btn-sm btn-outline-danger" onclick="limpiarSeleccionadas()">Quitar todas</button>
       </div>
       <ul id="selectedList" class="list-group"></ul>
     </div>
-  </div>
-
-  <hr>
-
+    <div class="col-md-8">
   <!-- Vista -->
-  <div id="songView" style="display:none;">
-    <h4 id="songTitle"></h4>
-    <div id="songMeta" class="text-muted mb-2"></div>
-    <div class="mb-3">
-      <button class="btn btn-sm btn-outline-primary me-2" onclick="transpose(1)">Subir tono ♯</button>
-      <button class="btn btn-sm btn-outline-secondary me-2" onclick="transpose(-1)">Bajar tono ♭</button>
-      <button class="btn btn-sm btn-outline-warning" onclick="editarAlabanza()">✏️ Editar</button>
+    <div id="songView" style="display:none;">
+      <h4 id="songTitle"></h4>
+      <div id="songMeta" class="text-muted mb-2"></div>
+      <div class="mb-3">
+        <button class="btn btn-sm btn-outline-primary me-2" onclick="transpose(1)">Subir tono ♯</button>
+        <button class="btn btn-sm btn-outline-secondary me-2" onclick="transpose(-1)">Bajar tono ♭</button>
+        <button class="btn btn-sm btn-outline-info me-2" id="toggleColsBtn" onclick="toggleColumnas()">🧱 Dos columnas</button>
+        <button class="btn btn-sm btn-outline-warning" onclick="editarAlabanza()">✏️ Editar</button>
+      </div>
+      <div id="songContent" class="mb-4"></div>
     </div>
-    <div id="songContent" class="mb-4"></div>
-  </div>
 
-  <!-- Editor -->
-  <div id="editorView" style="display:none;">
-    <input type="text" id="editTitle" class="form-control mb-2" placeholder="Título">
-    <textarea id="editContent" class="form-control mb-2" rows="10" placeholder="[C]Eres fiel..."></textarea>
-    <button class="btn btn-success me-2" onclick="guardarAlabanza()">💾 Guardar</button>
-    <button class="btn btn-secondary" onclick="cancelarEdicion()">Cancelar</button>
+    <!-- Editor -->
+    <div id="editorView" style="display:none;">
+      <input type="text" id="editTitle" class="form-control mb-2" placeholder="Título">
+      <textarea id="editContent" class="form-control mb-2" rows="10" placeholder="[C]Eres fiel..."></textarea>
+      <button class="btn btn-success me-2" onclick="guardarAlabanza()">💾 Guardar</button>
+      <button class="btn btn-secondary" onclick="cancelarEdicion()">Cancelar</button>
+    </div>
+    </div>
   </div>
+  
 </div>
 
 <script>
@@ -243,7 +273,15 @@
     document.getElementById("songMeta").innerHTML = `
       ${artista ? artista + " — " : ""} 
       ${tonoOriginal ? `<strong>Tono:</strong> ${tonoTranspuesto}` : ""}`;
-    document.getElementById("songContent").innerHTML = formatoChordProVisual(contenido);
+    document.getElementById("songContent").innerHTML = `<div class="alabanza-texto">${formatoChordProVisual(contenido)}</div>`;
+    ajustarColumnas();
+    // 🔽 Restaura modo de una columna al cambiar alabanza
+    const contenedor = document.querySelector('.alabanza-texto');
+    const btn = document.getElementById('toggleColsBtn');
+    if (contenedor && btn) {
+      contenedor.classList.remove('dos-columnas');
+      btn.textContent = "🧱 Dos columnas";
+    }
     document.getElementById("songView").style.display = "block";
     document.getElementById("editorView").style.display = "none";
   }
@@ -305,7 +343,7 @@
       const lyricText = lyrics.join("");
       html += `<pre><span class="chord-line">${escapeHtml(chordLine)}</span>\n${escapeHtml(lyricText)}</pre>`;
     }
-
+    
     return html;
   }
 
@@ -413,6 +451,31 @@
     };
     reader.readAsText(file);
   }
+
+  function ajustarColumnas() {
+  const contenedor = document.querySelector('.alabanza-texto');
+  if (!contenedor) return;
+
+  // si el contenido es muy alto, activamos dos columnas
+  const altura = contenedor.scrollHeight;
+  const altoViewport = window.innerHeight;
+
+  if (altura > altoViewport * 1.2) {
+    contenedor.classList.add('dos-columnas');
+  } else {
+    contenedor.classList.remove('dos-columnas');
+  }
+}
+
+function toggleColumnas() {
+  const contenedor = document.querySelector('.alabanza-texto');
+  const btn = document.getElementById('toggleColsBtn');
+  if (!contenedor) return;
+
+  contenedor.classList.toggle('dos-columnas');
+  const enDosColumnas = contenedor.classList.contains('dos-columnas');
+  btn.textContent = enDosColumnas ? "🧱 Una columna" : "🧱 Dos columnas";
+}
 </script>
 </body>
 </html>
