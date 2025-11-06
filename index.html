@@ -198,20 +198,22 @@
     songList.innerHTML = "";
     selectedList.innerHTML = "";
 
-    // Todas
-    alabanzas
-      .filter(a => a.titulo.toLowerCase().includes(filtro))
-      .forEach((a, i) => {
-        const li = document.createElement("li");
-        li.className = "list-group-item d-flex justify-content-between align-items-center";
-        li.innerHTML = `<span role="button">${a.titulo}</span>
-                        <button class="btn btn-sm btn-outline-success">➕</button>`;
-        li.querySelector("span").onclick = () => mostrarAlabanza(i);
-        li.querySelector("button").onclick = () => agregarSeleccionada(i);
-        songList.appendChild(li);
-      });
+    // Recorremos el array original para que el índice i sea el índice real en `alabanzas`
+    alabanzas.forEach((a, i) => {
+      if (!a.titulo || !a.titulo.toLowerCase().includes(filtro)) return;
 
-    // Seleccionadas
+      const li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between align-items-center";
+      li.innerHTML = `<span role="button">${a.titulo}</span>
+                      <button class="btn btn-sm btn-outline-success">➕</button>`;
+
+      // usamos el índice 'i' (índice real en `alabanzas`)
+      li.querySelector("span").onclick = () => mostrarAlabanza(i);
+      li.querySelector("button").onclick = () => agregarSeleccionada(i);
+      songList.appendChild(li);
+    });
+
+    // Seleccionadas: aquí usamos los índices de `seleccionadas` (array separado)
     seleccionadas.forEach((a, i) => {
       const li = document.createElement("li");
       li.className = "list-group-item d-flex justify-content-between align-items-center";
