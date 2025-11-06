@@ -1,0 +1,59 @@
+body {
+      padding: 20px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    pre { 
+      font-family: monospace; 
+      line-height: 1.4; 
+      margin-bottom: 0; 
+      white-space: pre-wrap;
+    }
+    .chord-line { 
+      color: #007bff; 
+      font-weight: bold; 
+    }
+    .file-input { display: none; }
+    #songList, #selectedList {
+      height: 50vh;
+      overflow-y: auto;
+    }
+
+    /* 🌞 Modo Día */
+    body.light-mode {
+      background-color: #ffffff;
+      color: #212529;
+    }
+    body.light-mode .list-group-item {
+      background-color: #fff;
+      color: #212529;
+    }
+    body.light-mode .btn-outline-secondary {
+      color: #212529;
+      border-color: #adb5bd;
+    }
+
+    /* 🌙 Modo Noche */
+    body.dark-mode {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    body.dark-mode .list-group-item {
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+    }
+    body.dark-mode .btn-outline-secondary {
+      color: #e0e0e0;
+      border-color: #666;
+    }
+    body.dark-mode .chord-line {
+      color: #66b3ff;
+    }
+    body.dark-mode pre {
+      color: #e0e0e0;
+    }
+    .light {
+      color:black !important;
+    }
+    .dark {
+      color:white !important;
+    }
