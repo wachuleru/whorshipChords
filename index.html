@@ -111,8 +111,23 @@
   <div class="row">
     <!-- Todas -->
     <div class="col-md-12">
-      <h5>Todas las alabanzas</h5>
-      <ul id="songList" class="list-group mb-3"></ul>
+      
+      <div class="accordion " id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" id="buttonCollapse" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              <h5>Todas las alabanzas</h5>
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+            <div class="accordion-body" id="contentAcc">
+              <ul id="songList" class="list-group mb-3"></ul>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
       <button class="btn btn-primary w-100 mb-4" onclick="nuevaAlabanza()">➕ Nueva alabanza</button>
     </div>
 
@@ -156,6 +171,7 @@
 </div>
 
 <script>
+  
   let alabanzas = JSON.parse(localStorage.getItem("alabanzas") || "[]");
   let seleccionadas = JSON.parse(localStorage.getItem("seleccionadas") || "[]");
   let alabanzaActual = null;
@@ -177,7 +193,7 @@
   const savedTheme = localStorage.getItem("theme") || "light";
   document.body.classList.add(savedTheme + "-mode");
   themeToggle.textContent = savedTheme === "light" ? "🌙 Noche" : "☀️ Día";
-
+  accordionList();
   themeToggle.addEventListener("click", () => {
     const current = document.body.classList.contains("dark-mode") ? "dark" : "light";
     const newTheme = current === "light" ? "dark" : "light";
@@ -188,6 +204,7 @@
     let tono=document.getElementById("songMeta");
     tono.classList.remove(current);
     tono.classList.add(newTheme);
+    accordionList();
   });
 
   // --------------------------
@@ -250,6 +267,25 @@
     }
   }
 
+  function accordionList(){
+    const acc = document.getElementById('buttonCollapse');
+    const contentAcc = document.getElementById('contentAcc');
+    const current = document.body.classList.contains("dark-mode") ? "dark" : "light";
+    const contrario = current=="dark"?"light":"dark";
+    console.log(current)
+    acc.classList.remove(contrario);
+    acc.classList.remove("bg-"+contrario);
+
+    acc.classList.add("bg-"+current);
+    acc.classList.add(current);
+
+    contentAcc.classList.remove(contrario);
+    contentAcc.classList.remove("bg-"+contrario);
+
+    contentAcc.classList.add("bg-"+current);
+    contentAcc.classList.add(current);
+
+  }
   // --------------------------
   // Mostrar / Render
   // --------------------------
@@ -479,5 +515,6 @@ function toggleColumnas() {
   btn.textContent = enDosColumnas ? "🧱 Una columna" : "🧱 Dos columnas";
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>
